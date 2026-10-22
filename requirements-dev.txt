@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==9.1.1
+mlflow==3.17.2        # optional experiment tracking (run_experiment.py skips it if absent)
+playwright==1.56.0    # only for scripts/render_terminal.py (README screenshots)
