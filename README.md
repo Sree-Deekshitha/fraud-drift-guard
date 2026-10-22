@@ -2,7 +2,7 @@
 
 **Real-time card-fraud scoring with a cost-optimised decision threshold, drift monitoring and gated retraining, tested against a simulated holiday season and a new fraud pattern.**
 
-![Python](https://img.shields.io/badge/python-3.13-2a78d6) ![LightGBM](https://img.shields.io/badge/model-LightGBM-1baf7a) ![FastAPI](https://img.shields.io/badge/serving-FastAPI-eb6834) ![tests](https://img.shields.io/badge/tests-19%20passing-1baf7a)
+![Python](https://img.shields.io/badge/python-3.13-2a78d6) ![LightGBM](https://img.shields.io/badge/model-LightGBM-1baf7a) ![FastAPI](https://img.shields.io/badge/serving-FastAPI-eb6834) [![CI](https://github.com/Sree-Deekshitha/fraud-drift-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/Sree-Deekshitha/fraud-drift-guard/actions/workflows/ci.yml)
 
 ## The problem
 
@@ -110,7 +110,7 @@ Building a one-row DataFrame per request dominated latency. The fast path encode
 
 ![tests](docs/images/screenshot_tests.png)
 
-The tests cover deterministic simulation, cost accounting, threshold search, PSI sensitivity, model save/load round-trip, fast-path vs pandas parity, and API behaviour under both scorers (including 422s on invalid input). GitHub Actions runs them on every push that touches this folder.
+The tests cover deterministic simulation, cost accounting, threshold search, PSI sensitivity, model save/load round-trip, fast-path vs pandas parity, and API behaviour under both scorers (including 422s on invalid input). GitHub Actions runs them on every push.
 
 ---
 
