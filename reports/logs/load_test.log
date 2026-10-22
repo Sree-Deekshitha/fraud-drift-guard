@@ -1,0 +1,7 @@
+Load test: 3000 requests, concurrency 8, 1 uvicorn worker, 2 vCPU (x86_64, Python 3.13.16)
+
+Scorer       p50 ms   p95 ms   p99 ms    req/s
+pandas        84.98   122.85   148.91       94
+fast          12.50    24.24    32.97      562
+
+Fast path: p50 85% lower, p99 78% lower, throughput x6.0

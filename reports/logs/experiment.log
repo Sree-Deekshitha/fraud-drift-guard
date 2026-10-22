@@ -1,0 +1,16 @@
+Generated 160,000 transactions (1.21% fraud) in 0.5s
+Split  train=100,000  val=40,000  test=20,000
+
+Model                  PR-AUC  Thresh  Recall    Prec  Flag%   Cost/1k  Saved vs none
+Rules engine              -       -     48.0%   27.1%   2.2%      1681          71.9%
+Logistic regression     0.784   0.075   88.5%   41.9%   2.6%       580          90.3%
+LightGBM                0.843   0.038   91.8%   42.3%   2.6%       484          91.9%
+No model (approve all)                    0.0%           0.0%      5983           0.0%
+
+LightGBM recall by fraud type (test week):
+  account_takeover    94.6%  (n=74)
+  card_testing        66.7%  (n=12)
+  classic_cnp         92.4%  (n=158)
+
+Logged run to MLflow (sqlite:///mlflow.db)
+Saved model v1 -> models/production

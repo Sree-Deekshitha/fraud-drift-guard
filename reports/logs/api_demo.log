@@ -1,0 +1,12 @@
+$ curl -s localhost:8000/health
+{"status":"ok","model_version":"v1","scorer":"fast"}
+
+$ curl -s -X POST localhost:8000/v1/score -H 'Content-Type: application/json' -d @examples/suspicious.json | python3 -m json.tool --compact
+{"fraud_probability":0.983218,"decision":"review","threshold":0.038,"model_version":"v1"}
+
+$ curl -s -X POST localhost:8000/v1/score -H 'Content-Type: application/json' -d @examples/everyday.json | python3 -m json.tool --compact
+{"fraud_probability":1.4e-05,"decision":"approve","threshold":0.038,"model_version":"v1"}
+
+$ curl -s -X POST localhost:8000/v1/score -H 'Content-Type: application/json' -d @examples/invalid.json | python3 -m json.tool --compact
+{"detail":[{"type":"less_than_equal","loc":["body","hour"],"msg":"Input should be less than or equal to 23","input":24,"ctx":{"le":23}},{"type":"literal_error","loc":["body","merchant_category"],"msg":"Input should be 'grocery', 'fuel', 'restaurants', 'online_retail', 'electronics', 'travel', 'gift_cards' or 'digital_goods'","input":"casino","ctx":{"expected":"'grocery', 'fuel', 'restaurants', 'online_retail', 'electronics', 'travel', 'gift_cards' or 'digital_goods'"}}]}
+
