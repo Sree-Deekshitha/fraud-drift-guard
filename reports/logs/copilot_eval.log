@@ -1,0 +1,25 @@
+Copilot eval - flagged transactions after the new fraud pattern, LLM = claude-sonnet-5-5
+Ground truth = simulator fraud type; 'likely_legitimate' = model false positive
+
+Accuracy                   v1 wk24 (dev)     v2 wk24 (dev)    v2 wk26 (test)  rules wk26  supervised*
+classic_cnp (n=15)                   13%               67%               60%         53%          51%
+account_takeover (n=15)               73%               47%               53%         67%          52%
+card_testing (n=15)                  67%               47%               60%         93%          91%
+likely_legitimate (n=20)               40%               55%               40%         25%          95%
+Overall (balanced)                   48%               54%               53%         60%          72%
+* LightGBM trained on 7,669 labelled flagged cases (weeks 15-23): an upper reference, not a zero-shot method
+
+Fraud called legitimate                4%                7%                4%
+Fraud -> 'approve'                    2%                0%                4%
+Notes fully grounded                100%               97%              100%
+Cost per case                    $0.0079           $0.0115           $0.0116
+Latency p50 / p95            4.0s / 6.1s       6.8s / 9.0s       6.9s / 8.7s
+
+Total API spend for this evaluation: $2.02
+
+Test-week confusion (rows = truth, cols = LLM v2):
+                   classic_cnp  account_takeover  card_testing  likely_legitimate
+classic_cnp                  9                 6             0                  0
+account_takeover             5                 8             0                  2
+card_testing                 1                 5             9                  0
+likely_legitimate            4                 8             0                  8

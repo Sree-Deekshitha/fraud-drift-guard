@@ -1,0 +1,49 @@
+$ curl -s -X POST localhost:8000/v1/explain -d @examples/suspicious.json | python3 -m json.tool
+{
+    "fraud_probability": 0.983218,
+    "decision": "review",
+    "threshold": 0.038,
+    "model_version": "v1",
+    "case_note": {
+        "suspected_pattern": "classic_cnp",
+        "confidence": "high",
+        "risk_factors": [
+            {
+                "field": "distance_from_home_km",
+                "observation": "Purchase made 640.0 km from the cardholder's home."
+            },
+            {
+                "field": "hour",
+                "observation": "Transaction at hour 2.0 local, an unusual night-time hour."
+            },
+            {
+                "field": "card_present",
+                "observation": "Card not present (0.0) on an electronics purchase, a resellable goods category, with a new device (1.0)."
+            },
+            {
+                "field": "fraud_probability",
+                "observation": "Score of 0.9832 is far above the 0.038 review threshold, not a marginal flag."
+            }
+        ],
+        "mitigating_factors": [
+            {
+                "field": "account_age_days",
+                "observation": "Account is 412.0 days old, so it is established rather than newly opened."
+            },
+            {
+                "field": "txn_count_24h",
+                "observation": "Only 3.0 transactions in the last 24h, with no sign of rapid card-testing bursts."
+            },
+            {
+                "field": "amount",
+                "observation": "Amount of 189.99 USD is modest in absolute terms, though 4.2x the 30-day average."
+            }
+        ],
+        "recommended_action": "block_and_contact_customer",
+        "summary": "Card-not-present electronics purchase of 189.99 USD at 2am, 640.0 km from home, on a new device, 4.2x the customer's average. Score 0.9832 vs threshold 0.038. Fits classic CNP; block and contact the customer."
+    },
+    "ungrounded_numbers": [],
+    "llm_model": "claude-sonnet-5-5",
+    "llm_latency_s": 4.293,
+    "llm_cost_usd": 0.008368
+}

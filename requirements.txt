@@ -8,3 +8,4 @@ fastapi==0.159.1
 uvicorn==0.54.0
 pydantic==2.13.5
 httpx==0.28.1
+anthropic==2.1.0      # LLM copilot (/v1/explain); optional at runtime

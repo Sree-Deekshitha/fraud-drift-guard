@@ -1,0 +1,314 @@
+{
+  "classic_cnp": {
+    "txn_id": "w26-002387",
+    "case": {
+      "transaction": {
+        "Amount (USD)": 307.14,
+        "Amount / customer's 30-day average": 7.045,
+        "Hour of day (0-23, local)": 15.0,
+        "Card physically present (1/0)": 0.0,
+        "Distance from cardholder's home (km)": 3149.4,
+        "New device for this customer (1/0)": 1.0,
+        "Transactions on this card in last 24h": 4.0,
+        "Account age (days)": 261.0,
+        "Merchant category": "electronics"
+      },
+      "model": {
+        "fraud_probability": 0.9773,
+        "review_threshold": 0.038,
+        "top_drivers_vs_typical_customer": [
+          {
+            "field": "card_present",
+            "effect": "raises risk",
+            "log_odds": 5.63
+          },
+          {
+            "field": "distance_from_home_km",
+            "effect": "raises risk",
+            "log_odds": 3.72
+          },
+          {
+            "field": "new_device",
+            "effect": "raises risk",
+            "log_odds": 3.68
+          },
+          {
+            "field": "merchant_category",
+            "effect": "raises risk",
+            "log_odds": 3.29
+          }
+        ]
+      }
+    },
+    "note": {
+      "suspected_pattern": "classic_cnp",
+      "confidence": "high",
+      "risk_factors": [
+        {
+          "field": "distance_from_home_km",
+          "observation": "Purchase made 3149.4 km from the cardholder's home."
+        },
+        {
+          "field": "new_device",
+          "observation": "New device for this customer, and the card was not present (card_present = 0)."
+        },
+        {
+          "field": "merchant_category",
+          "observation": "Electronics purchase of 307.14 USD, a high-value resellable goods category."
+        },
+        {
+          "field": "fraud_probability",
+          "observation": "Model score 0.9773 is far above the 0.038 review threshold."
+        }
+      ],
+      "mitigating_factors": [
+        {
+          "field": "hour",
+          "observation": "Transaction at 15:00 local, a normal daytime hour rather than an unusual night hour."
+        },
+        {
+          "field": "account_age_days",
+          "observation": "Account is 261 days old, so it is not a brand-new account."
+        }
+      ],
+      "recommended_action": "block_and_contact_customer",
+      "summary": "Card-not-present electronics buy of 307.14 USD on a new device, 3149.4 km from home, at 7.045x the 30-day average. Score 0.9773 vs threshold 0.038. Daytime hour is benign, but the other signals align. Block and contact customer."
+    }
+  },
+  "account_takeover": {
+    "txn_id": "w26-002483",
+    "case": {
+      "transaction": {
+        "Amount (USD)": 169.84,
+        "Amount / customer's 30-day average": 3.776,
+        "Hour of day (0-23, local)": 17.0,
+        "Card physically present (1/0)": 0.0,
+        "Distance from cardholder's home (km)": 87.6,
+        "New device for this customer (1/0)": 1.0,
+        "Transactions on this card in last 24h": 2.0,
+        "Account age (days)": 2117.0,
+        "Merchant category": "online_retail"
+      },
+      "model": {
+        "fraud_probability": 0.7301,
+        "review_threshold": 0.038,
+        "top_drivers_vs_typical_customer": [
+          {
+            "field": "new_device",
+            "effect": "raises risk",
+            "log_odds": 5.79
+          },
+          {
+            "field": "card_present",
+            "effect": "raises risk",
+            "log_odds": 4.38
+          },
+          {
+            "field": "distance_from_home_km",
+            "effect": "raises risk",
+            "log_odds": 3.84
+          },
+          {
+            "field": "amount_to_avg_ratio",
+            "effect": "raises risk",
+            "log_odds": 3.07
+          }
+        ]
+      }
+    },
+    "note": {
+      "suspected_pattern": "account_takeover",
+      "confidence": "medium",
+      "risk_factors": [
+        {
+          "field": "new_device",
+          "observation": "Transaction made from a device not previously used by this customer (new_device = 1), the largest model driver."
+        },
+        {
+          "field": "amount_to_avg_ratio",
+          "observation": "Amount is 3.776x the customer's 30-day average, a clear jump above their normal spend."
+        },
+        {
+          "field": "card_present",
+          "observation": "Card-not-present (0) online purchase, which fits remote use of account or card credentials."
+        },
+        {
+          "field": "fraud_probability",
+          "observation": "Model score 0.7301 is far above the 0.038 review threshold, so this is not a marginal flag."
+        }
+      ],
+      "mitigating_factors": [
+        {
+          "field": "hour",
+          "observation": "Hour 17 local is ordinary daytime, not an unusual night-time pattern."
+        },
+        {
+          "field": "account_age_days",
+          "observation": "Account is established at 2117 days, with no sign of a newly opened account."
+        },
+        {
+          "field": "txn_count_24h",
+          "observation": "Only 2 transactions in 24h, so there is no sign of rapid card-testing activity."
+        }
+      ],
+      "recommended_action": "step_up_authentication",
+      "summary": "Established account (2117 days), new device, $169.84 online retail spend at 3.776x the 30-day average, 87.6 km from home, daytime. Score 0.7301 vs 0.038 threshold. Looks like account takeover; verify the customer via step-up."
+    }
+  },
+  "card_testing": {
+    "txn_id": "w26-001149",
+    "case": {
+      "transaction": {
+        "Amount (USD)": 8.93,
+        "Amount / customer's 30-day average": 0.195,
+        "Hour of day (0-23, local)": 5.0,
+        "Card physically present (1/0)": 0.0,
+        "Distance from cardholder's home (km)": 52.4,
+        "New device for this customer (1/0)": 0.0,
+        "Transactions on this card in last 24h": 7.0,
+        "Account age (days)": 28.0,
+        "Merchant category": "gift_cards"
+      },
+      "model": {
+        "fraud_probability": 0.0499,
+        "review_threshold": 0.038,
+        "top_drivers_vs_typical_customer": [
+          {
+            "field": "card_present",
+            "effect": "raises risk",
+            "log_odds": 5.07
+          },
+          {
+            "field": "txn_count_24h",
+            "effect": "raises risk",
+            "log_odds": 4.39
+          },
+          {
+            "field": "hour",
+            "effect": "raises risk",
+            "log_odds": 4.32
+          },
+          {
+            "field": "merchant_category",
+            "effect": "raises risk",
+            "log_odds": 2.86
+          }
+        ]
+      }
+    },
+    "note": {
+      "suspected_pattern": "card_testing",
+      "confidence": "medium",
+      "risk_factors": [
+        {
+          "field": "merchant_category",
+          "observation": "Gift cards are a common target for probing card validity."
+        },
+        {
+          "field": "amount",
+          "observation": "Small charge of 8.93 USD fits a low-value test purchase."
+        },
+        {
+          "field": "txn_count_24h",
+          "observation": "7.0 transactions on this card in 24h suggests repeated probing."
+        },
+        {
+          "field": "card_present",
+          "observation": "Card not present (0.0) at 5.0 hour local time, which is unusual."
+        }
+      ],
+      "mitigating_factors": [
+        {
+          "field": "new_device",
+          "observation": "Not a new device for this customer (0.0), which argues against account takeover."
+        },
+        {
+          "field": "amount_to_avg_ratio",
+          "observation": "Amount is 0.195 of the customer's 30-day average, so there is no spend spike."
+        },
+        {
+          "field": "fraud_probability",
+          "observation": "Score of 0.0499 is only modestly above the 0.038 review threshold."
+        }
+      ],
+      "recommended_action": "step_up_authentication",
+      "summary": "Likely card testing: 8.93 USD gift card purchase, card not present, 5am, 7 transactions in 24h. Known device and normal spend level argue against takeover, and the score is near threshold. Step up authentication and check the recent transaction sequence."
+    }
+  },
+  "likely_legitimate": {
+    "txn_id": "w26-003077",
+    "case": {
+      "transaction": {
+        "Amount (USD)": 237.21,
+        "Amount / customer's 30-day average": 7.39,
+        "Hour of day (0-23, local)": 17.0,
+        "Card physically present (1/0)": 0.0,
+        "Distance from cardholder's home (km)": 7.6,
+        "New device for this customer (1/0)": 0.0,
+        "Transactions on this card in last 24h": 3.0,
+        "Account age (days)": 655.0,
+        "Merchant category": "online_retail"
+      },
+      "model": {
+        "fraud_probability": 0.0533,
+        "review_threshold": 0.038,
+        "top_drivers_vs_typical_customer": [
+          {
+            "field": "card_present",
+            "effect": "raises risk",
+            "log_odds": 4.43
+          },
+          {
+            "field": "merchant_category",
+            "effect": "raises risk",
+            "log_odds": 3.83
+          },
+          {
+            "field": "amount_to_avg_ratio",
+            "effect": "raises risk",
+            "log_odds": 3.21
+          },
+          {
+            "field": "amount",
+            "effect": "raises risk",
+            "log_odds": 2.52
+          }
+        ]
+      }
+    },
+    "note": {
+      "suspected_pattern": "likely_legitimate",
+      "confidence": "medium",
+      "risk_factors": [
+        {
+          "field": "amount_to_avg_ratio",
+          "observation": "Amount is 7.39x the customer's 30-day average, a notable spike in spend."
+        },
+        {
+          "field": "card_present",
+          "observation": "Card not present (0.0) on an online_retail purchase, which the model weighs heavily."
+        },
+        {
+          "field": "amount",
+          "observation": "Amount of 237.21 USD is moderately high for an online purchase."
+        }
+      ],
+      "mitigating_factors": [
+        {
+          "field": "fraud_probability",
+          "observation": "Score of 0.0533 is only just above the 0.038 review threshold, with no strong specific anomaly."
+        },
+        {
+          "field": "distance_from_home_km",
+          "observation": "Only 7.6 km from home, consistent with normal local activity."
+        },
+        {
+          "field": "new_device",
+          "observation": "Not a new device (0.0), so no sign of account access from an unfamiliar device."
+        }
+      ],
+      "recommended_action": "approve",
+      "summary": "Score 0.0533 barely exceeds threshold 0.038. Spend is 7.39x average, but device is known, 7.6 km from home, 17:00, account 655 days old, 3 txns in 24h. Looks like a normal online purchase; approve."
+    }
+  }
+}

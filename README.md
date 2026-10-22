@@ -1,8 +1,8 @@
 # fraud-drift-guard
 
-**Real-time card-fraud scoring with a cost-optimised decision threshold, drift monitoring and gated retraining, tested against a simulated holiday season and a new fraud pattern.**
+**Real-time card-fraud scoring with a cost-optimised decision threshold, drift monitoring, gated retraining and an LLM analyst copilot, tested against a simulated holiday season and a new fraud pattern.**
 
-![Python](https://img.shields.io/badge/python-3.13-2a78d6) ![LightGBM](https://img.shields.io/badge/model-LightGBM-1baf7a) ![FastAPI](https://img.shields.io/badge/serving-FastAPI-eb6834) [![CI](https://github.com/Sree-Deekshitha/fraud-drift-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/Sree-Deekshitha/fraud-drift-guard/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.13-2a78d6) ![LightGBM](https://img.shields.io/badge/model-LightGBM-1baf7a) ![FastAPI](https://img.shields.io/badge/serving-FastAPI-eb6834) ![LLM](https://img.shields.io/badge/LLM-Claude%20Sonnet-6250d6) [![CI](https://github.com/Sree-Deekshitha/fraud-drift-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/Sree-Deekshitha/fraud-drift-guard/actions/workflows/ci.yml)
 
 **[▶ Live demo](https://sree-deekshitha.github.io/fraud-drift-guard/)**: score transactions with the production model, which runs in your browser.
 
@@ -14,7 +14,7 @@ A fraud model that looks great in a notebook usually degrades quietly once it's 
 2. **Drift alarms fire for the wrong reasons.** Seasonal shopping changes trip distribution monitors (PSI) even when fraud hasn't changed, while a new fraud pattern can slip through without a feature-level alarm.
 3. **Labels arrive late.** Chargebacks take about two weeks, so you can't measure live recall directly.
 
-This project builds the full loop (train → choose threshold by cost → serve → monitor → retrain → gate → promote) and then stress-tests it on 20 simulated production weeks.
+This project builds the full loop (train → choose threshold by cost → serve → monitor → retrain → gate → promote), stress-tests it on 20 simulated production weeks, and adds an LLM copilot that writes case notes for the analysts who review flagged transactions.
 
 ## Results at a glance
 
@@ -26,6 +26,7 @@ This project builds the full loop (train → choose threshold by cost → serve 
 | Serving latency | **p50 12.5 ms / p99 33 ms**, single request, 1 worker on 2 vCPU (pandas path: 85 / 149 ms) |
 | Drift finding | Retraining when PSI fired **cost 8.4% more** than never retraining |
 | Retraining finding | Performance-triggered retraining raised recall from **71% to 84%** but cost **3.8% more**. The root cause is analysed below. |
+| LLM copilot | **100%** of case notes on the held-out week had every number traceable to the case data; **$0.012** and **~7 s** per note. It identifies the fraud type **no better than simple rules** (53% vs 60%), so it is used to explain, not to classify. |
 
 The data is simulated (see [Data](#data)), so these numbers show how the pipeline behaves under assumptions that are written down in the code. They are not benchmarks on real bank data.
 
@@ -108,11 +109,41 @@ Building a one-row DataFrame per request dominated latency. The fast path encode
 
 3,000 requests, concurrency 8, one uvicorn worker, 2 vCPU container. Latency is client-side and includes queueing.
 
-## 4. Tests & CI
+## 4. LLM analyst copilot
+
+The ML model decides *whether* a transaction gets reviewed. An analyst then has seconds to decide *what to do*. `POST /v1/explain` asks Claude (Sonnet) for a structured case note: suspected fraud type, risk and mitigating factors, a recommended action and a one-line summary.
+
+![explain demo](docs/images/screenshot_explain.png)
+
+**Design choices**
+- **Structured output, not free text.** The reply must match a JSON schema with enumerated fraud types, actions and field names, so it can be stored, filtered and measured.
+- **Only the facts the model saw.** The prompt contains the transaction, the score and the model's top drivers (leave-one-out attributions), and nothing else.
+- **Every number is checked.** `grounding_check` extracts each number in the note and verifies it against the case data. A note that says "7 prior chargebacks" when no such field exists is flagged in the response (`ungrounded_numbers`).
+- **The key never touches the repo.** The server reads `ANTHROPIC_API_KEY` from the environment or a git-ignored `.env`. Without it, `/v1/explain` returns 503 and everything else works. Tests use a fake client.
+
+### Evaluation
+
+I sampled 65 flagged transactions per week (15 of each fraud type plus 20 false positives) from after the new fraud pattern appeared. Ground truth is the simulator's fraud type. I iterated on the prompt using **week 24 (dev)** and reported the final number once, on the untouched **week 26 (test)**.
+
+<p align="center"><img src="docs/images/copilot_accuracy.png" width="75%" /></p>
+
+![copilot eval](docs/images/screenshot_copilot_eval.png)
+
+**What I found**
+- **Prompt v1 mislabelled stolen-card fraud as account takeover 13 out of 15 times.** The two types overlap: both involve card-not-present purchases and often a new device. v2 adds guidance on how to tell them apart and the historical rate at which flags turn out to be fraud (41%). That raised stolen-card accuracy to 60–67% but lowered account takeover, for a balanced total of 48% → 53%.
+- **The LLM does not beat a 10-line rules heuristic at naming the fraud type** (53% vs 60%), and it loses badly on card testing (60% vs 93%), a pattern that rules capture well.
+- **The problem is partly the data, not just the prompt.** A LightGBM classifier trained on 7,669 *labelled* flagged cases separates stolen-card fraud from account takeover only 51–52% of the time. With these features the two types are close to indistinguishable.
+- **It rarely clears real fraud:** 4% of fraud was labelled "likely legitimate" on the test week. It also clears only 40% of false positives, so it doesn't save much analyst work there.
+- **Grounding held up.** 100% of test-week notes had every number traceable to the case data. The only failures on the dev week came from my own checker, which initially rejected negative attribution values and the base rate stated in the prompt. I fixed the checker, not the notes.
+
+**What I'd ship.** Use the LLM for what it did well: readable, grounded case notes. Take the fraud-type label from a supervised classifier once labelled cases exist (72% balanced accuracy vs 53%), and pass that label into the prompt instead of asking the LLM to guess. The evaluation cost $2.02 in API calls. All responses are cached in `reports/copilot/`, so `make copilot-eval` rebuilds every number without a key.
+
+## 5. Tests & CI
+
+
+The tests cover deterministic simulation, cost accounting, threshold search, PSI sensitivity, model save/load round-trip, fast-path vs pandas parity, and API behaviour under both scorers (including 422s on invalid input), browser-vs-Python score parity, and the LLM copilot against a fake client (schema sent, grounding, 503 without a key). GitHub Actions runs them on every push.
 
 ![tests](docs/images/screenshot_tests.png)
-
-The tests cover deterministic simulation, cost accounting, threshold search, PSI sensitivity, model save/load round-trip, fast-path vs pandas parity, and API behaviour under both scorers (including 422s on invalid input). GitHub Actions runs them on every push.
 
 ---
 
@@ -125,6 +156,7 @@ The data is **simulated** in [`src/fraudguard/simulate.py`](src/fraudguard/simul
 - Results depend on the simulated distributions and the cost constants (`$12` review, `$25` chargeback fee). Change them and the optimal threshold and policy ranking can change. That sensitivity is part of the point.
 - Customer history features (`amount_to_avg_ratio`, `txn_count_24h`) are given as inputs. In production they would come from a feature store with point-in-time correctness.
 - Each policy was run on one simulated timeline (one seed). Treat small differences (±2–3%) as noise.
+- The copilot evaluation has 15–20 cases per class, so per-class accuracy carries roughly ±20-point uncertainty. Only large gaps (such as card testing, 60% vs 93%) are meaningful. Simulated cases are also tidier than real ones, which have free-text merchant names and messy histories.
 
 ## Run it
 
@@ -137,6 +169,7 @@ make loadtest   # latency benchmark
 make test
 make docker     # containerised API
 make web        # re-export the model for the browser demo (docs/)
+make copilot-eval  # LLM copilot eval from cached responses (key only needed for new calls)
 ```
 
 Experiment runs are logged to MLflow (`mlflow ui --backend-store-uri sqlite:///mlflow.db`). All figures and screenshots in this README are generated by the scripts in `scripts/` from real runs. The screenshots come from `scripts/render_terminal.py`, which renders the captured logs in `reports/logs/` verbatim.
@@ -148,7 +181,8 @@ src/fraudguard/
   model.py      LightGBM training, fast scoring path, save/load
   drift.py      PSI against a stored reference profile
   monitor.py    weekly loop, retraining policies, champion/challenger gate
-  api.py        FastAPI service
+  copilot.py    LLM case notes: prompt, JSON schema, grounding check
+  api.py        FastAPI service (/v1/score, /v1/score/batch, /v1/explain)
 scripts/        experiment, monitoring, load test, screenshot rendering, web export
 docs/           live demo (GitHub Pages): index.html + scorer.js + model.json
 reports/        JSON/CSV results + raw logs

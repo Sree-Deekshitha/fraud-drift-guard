@@ -5,26 +5,31 @@ rootdir: fraud-drift-guard
 configfile: pyproject.toml
 testpaths: tests
 plugins: platformdirs-4.12.3, anyio-4.15.1
-collecting ... collected 19 items
+collecting ... collected 24 items
 
-tests/test_api.py::test_health[fast] PASSED                              [  5%]
-tests/test_api.py::test_health[pandas] PASSED                            [ 10%]
-tests/test_api.py::test_score_single[fast] PASSED                        [ 15%]
-tests/test_api.py::test_score_single[pandas] PASSED                      [ 21%]
-tests/test_api.py::test_score_batch_matches_single[fast] PASSED          [ 26%]
-tests/test_api.py::test_score_batch_matches_single[pandas] PASSED        [ 31%]
-tests/test_api.py::test_validation_rejects_bad_input[fast-bad0] PASSED   [ 36%]
-tests/test_api.py::test_validation_rejects_bad_input[fast-bad1] PASSED   [ 42%]
-tests/test_api.py::test_validation_rejects_bad_input[fast-bad2] PASSED   [ 47%]
-tests/test_api.py::test_validation_rejects_bad_input[pandas-bad0] PASSED [ 52%]
-tests/test_api.py::test_validation_rejects_bad_input[pandas-bad1] PASSED [ 57%]
-tests/test_api.py::test_validation_rejects_bad_input[pandas-bad2] PASSED [ 63%]
-tests/test_core.py::test_simulation_is_deterministic_and_valid PASSED    [ 68%]
-tests/test_core.py::test_scenario_drift_schedule PASSED                  [ 73%]
-tests/test_core.py::test_cost_breakdown_counts_missed_fraud_and_reviews PASSED [ 78%]
-tests/test_core.py::test_best_threshold_separates_perfect_scores PASSED  [ 84%]
-tests/test_core.py::test_psi_flags_shift_but_not_same_distribution PASSED [ 89%]
-tests/test_core.py::test_fast_scoring_path_matches_pandas_path PASSED    [ 94%]
-tests/test_core.py::test_model_roundtrip PASSED                          [100%]
+tests/test_api.py::test_health[fast] PASSED                              [  4%]
+tests/test_api.py::test_health[pandas] PASSED                            [  8%]
+tests/test_api.py::test_score_single[fast] PASSED                        [ 12%]
+tests/test_api.py::test_score_single[pandas] PASSED                      [ 16%]
+tests/test_api.py::test_score_batch_matches_single[fast] PASSED          [ 20%]
+tests/test_api.py::test_score_batch_matches_single[pandas] PASSED        [ 25%]
+tests/test_api.py::test_validation_rejects_bad_input[fast-bad0] PASSED   [ 29%]
+tests/test_api.py::test_validation_rejects_bad_input[fast-bad1] PASSED   [ 33%]
+tests/test_api.py::test_validation_rejects_bad_input[fast-bad2] PASSED   [ 37%]
+tests/test_api.py::test_validation_rejects_bad_input[pandas-bad0] PASSED [ 41%]
+tests/test_api.py::test_validation_rejects_bad_input[pandas-bad1] PASSED [ 45%]
+tests/test_api.py::test_validation_rejects_bad_input[pandas-bad2] PASSED [ 50%]
+tests/test_copilot.py::test_copilot_sends_schema_and_grounds_note PASSED [ 54%]
+tests/test_copilot.py::test_grounding_flags_invented_numbers PASSED      [ 58%]
+tests/test_copilot.py::test_explain_endpoint PASSED                      [ 62%]
+tests/test_copilot.py::test_explain_disabled_without_key PASSED          [ 66%]
+tests/test_core.py::test_simulation_is_deterministic_and_valid PASSED    [ 70%]
+tests/test_core.py::test_scenario_drift_schedule PASSED                  [ 75%]
+tests/test_core.py::test_cost_breakdown_counts_missed_fraud_and_reviews PASSED [ 79%]
+tests/test_core.py::test_best_threshold_separates_perfect_scores PASSED  [ 83%]
+tests/test_core.py::test_psi_flags_shift_but_not_same_distribution PASSED [ 87%]
+tests/test_core.py::test_fast_scoring_path_matches_pandas_path PASSED    [ 91%]
+tests/test_core.py::test_model_roundtrip PASSED                          [ 95%]
+tests/test_web_model.py::test_browser_scorer_matches_python PASSED       [100%]
 
-============================== 19 passed in 1.15s ==============================
+============================== 24 passed in 1.79s ==============================

@@ -41,6 +41,7 @@ def main() -> None:
         categories=CATEGORIES, trees=[convert(t["tree_structure"]) for t in dump["tree_info"]],
     )
     OUT.write_text(json.dumps(payload, separators=(",", ":")))
+    (PRODUCTION_DIR / "typical.json").write_text(json.dumps(typical))  # used by the copilot
 
     sample = generate_week(31).sample(300, random_state=1)
     FIXTURES.parent.mkdir(parents=True, exist_ok=True)
