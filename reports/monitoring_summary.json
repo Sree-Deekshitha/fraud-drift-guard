@@ -1,0 +1,166 @@
+{
+  "summary": [
+    {
+      "policy": "Static (never retrain)",
+      "total_cost": 328156.69999999995,
+      "fraud_loss": 149932.7,
+      "review_cost": 178224.0,
+      "mean_recall": 0.7931143448915075,
+      "steady_cost": 97141.49,
+      "steady_recall": 0.7112764845272356,
+      "retrains": 0,
+      "promotions": 0,
+      "total_vs_static": 0.0,
+      "steady_vs_static": 0.0
+    },
+    {
+      "policy": "PSI-triggered",
+      "total_cost": 355864.48000000004,
+      "fraud_loss": 211744.48000000004,
+      "review_cost": 144120.0,
+      "mean_recall": 0.7612742923311459,
+      "steady_cost": 112947.91,
+      "steady_recall": 0.6611252174959837,
+      "retrains": 2,
+      "promotions": 1,
+      "total_vs_static": 0.08443460090865162,
+      "steady_vs_static": 0.16271543703931246
+    },
+    {
+      "policy": "Performance-triggered",
+      "total_cost": 331497.66,
+      "fraud_loss": 168213.66,
+      "review_cost": 163284.0,
+      "mean_recall": 0.8400483181305016,
+      "steady_cost": 100831.64000000001,
+      "steady_recall": 0.8403089825615888,
+      "retrains": 3,
+      "promotions": 3,
+      "total_vs_static": 0.010180989752761382,
+      "steady_vs_static": 0.03798737285170328
+    }
+  ],
+  "window_ablation": [
+    {
+      "window": 3,
+      "total_cost": 341122.3,
+      "steady_cost": 100205.70999999999,
+      "steady_recall": 0.8272822200331351
+    },
+    {
+      "window": 5,
+      "total_cost": 329707.69999999995,
+      "steady_cost": 91370.35,
+      "steady_recall": 0.9014466265135771
+    },
+    {
+      "window": 8,
+      "total_cost": 331497.66,
+      "steady_cost": 100831.64000000001,
+      "steady_recall": 0.8403089825615888
+    },
+    {
+      "window": 11,
+      "total_cost": 324381.51,
+      "steady_cost": 93319.54,
+      "steady_recall": 0.866474919052869
+    }
+  ],
+  "events": {
+    "static": [],
+    "psi_trigger": [
+      {
+        "week": 13,
+        "reason": "PSI txn_count_24h=0.48",
+        "challenger": "v2",
+        "promoted": false,
+        "champion_holdout_cost": 10432.53,
+        "challenger_holdout_cost": 11803.5,
+        "train_weeks": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "week": 16,
+        "reason": "PSI txn_count_24h=0.49",
+        "challenger": "v2",
+        "promoted": true,
+        "champion_holdout_cost": 19118.15,
+        "challenger_holdout_cost": 16920.66,
+        "train_weeks": [
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      }
+    ],
+    "perf_trigger": [
+      {
+        "week": 15,
+        "reason": "cost/1k $963 vs $487",
+        "challenger": "v2",
+        "promoted": true,
+        "champion_holdout_cost": 19255.37,
+        "challenger_holdout_cost": 17093.41,
+        "train_weeks": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "week": 18,
+        "reason": "cost/1k $992 vs $566",
+        "challenger": "v3",
+        "promoted": true,
+        "champion_holdout_cost": 19838.87,
+        "challenger_holdout_cost": 19615.18,
+        "train_weeks": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      {
+        "week": 21,
+        "reason": "observed recall 0.74 vs 0.89",
+        "challenger": "v4",
+        "promoted": true,
+        "champion_holdout_cost": 19195.1,
+        "challenger_holdout_cost": 17009.6,
+        "train_weeks": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ]
+      }
+    ]
+  }
+}
