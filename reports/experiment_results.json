@@ -1,0 +1,74 @@
+{
+  "split": {
+    "train": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "val": [
+      5,
+      6
+    ],
+    "test": [
+      7
+    ]
+  },
+  "results": {
+    "Rules engine": {
+      "pr_auc": null,
+      "threshold": null,
+      "fraud_loss": 28446.739999999998,
+      "review_cost": 5172.0,
+      "total_cost": 33618.74,
+      "cost_per_1k": 1680.937,
+      "recall": 0.47950819672131145,
+      "precision": 0.271461716937355,
+      "flag_rate": 0.02155,
+      "n": 20000
+    },
+    "Logistic regression": {
+      "pr_auc": 0.7841197154646143,
+      "threshold": 0.075,
+      "fraud_loss": 5415.919999999999,
+      "review_cost": 6180.0,
+      "total_cost": 11595.919999999998,
+      "cost_per_1k": 579.7959999999999,
+      "recall": 0.8852459016393442,
+      "precision": 0.41941747572815535,
+      "flag_rate": 0.02575,
+      "n": 20000,
+      "train_seconds": 0.5833966499999406
+    },
+    "LightGBM": {
+      "pr_auc": 0.8430333925243089,
+      "threshold": 0.038,
+      "fraud_loss": 3319.64,
+      "review_cost": 6360.0,
+      "total_cost": 9679.64,
+      "cost_per_1k": 483.982,
+      "recall": 0.9180327868852459,
+      "precision": 0.4226415094339623,
+      "flag_rate": 0.0265,
+      "n": 20000,
+      "train_seconds": 2.700468426000043,
+      "best_iteration": 218
+    },
+    "No model": {
+      "fraud_loss": 119656.6,
+      "review_cost": 0.0,
+      "total_cost": 119656.6,
+      "cost_per_1k": 5982.83,
+      "recall": 0.0,
+      "precision": 0.0,
+      "flag_rate": 0.0,
+      "n": 20000
+    }
+  },
+  "lightgbm_recall_by_fraud_type": {
+    "account_takeover": 0.9459,
+    "card_testing": 0.6667,
+    "classic_cnp": 0.9241
+  }
+}

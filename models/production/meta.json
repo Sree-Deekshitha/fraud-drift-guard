@@ -1,0 +1,36 @@
+{
+  "version": "v1",
+  "threshold": 0.038,
+  "trained_weeks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "val_metrics": {
+    "fraud_loss": 6886.469999999998,
+    "review_cost": 12612.0,
+    "total_cost": 19498.469999999998,
+    "cost_per_1k": 487.4617499999999,
+    "recall": 0.9227467811158798,
+    "precision": 0.40913415794481445,
+    "flag_rate": 0.026275,
+    "n": 40000
+  },
+  "created_at": "2026-10-22T16:46:19.792262+00:00",
+  "best_iteration": 218,
+  "features": [
+    "amount",
+    "amount_to_avg_ratio",
+    "hour",
+    "card_present",
+    "distance_from_home_km",
+    "new_device",
+    "txn_count_24h",
+    "account_age_days",
+    "merchant_category"
+  ]
+}
