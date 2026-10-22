@@ -1,4 +1,4 @@
-.PHONY: setup train monitor serve loadtest test docker all
+.PHONY: setup train monitor serve loadtest test docker web all
 
 setup:      ## install package + dev tools
 	pip install -r requirements-dev.txt && pip install -e .
@@ -21,4 +21,7 @@ test:
 docker:
 	docker build -t fraud-drift-guard . && docker run --rm -p 8000:8000 fraud-drift-guard
 
-all: train monitor loadtest test
+web:        ## export model to docs/model.json for the GitHub Pages demo
+	python scripts/export_web_model.py
+
+all: train monitor loadtest web test
